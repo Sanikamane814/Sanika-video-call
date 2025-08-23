@@ -1,0 +1,311 @@
+/* video-meet.module.css - Unique styling for video conference component */
+
+/* Base container */
+.video-meet-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #121212;
+  overflow: hidden;
+}
+
+/* Pre-join screen styles */
+.vm-prejoin-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #1e1e2f 0%, #2d2d42 100%);
+}
+
+.vm-join-card {
+  background-color: #252538;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid #3a3a4e;
+}
+
+.vm-preview-video {
+  width: 280px;
+  height: 210px;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border: 3px solid #4a80f0;
+  box-shadow: 0 4px 16px rgba(74, 128, 240, 0.3);
+}
+
+/* Main conference area */
+.vm-conference-area {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/* Video elements */
+.vm-local-video {
+  position: absolute;
+  bottom: 5rem;
+  right: 1.5rem;
+  width: 240px;
+  height: 180px;
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 2px solid #4a80f0;
+  transition: transform 0.3s ease;
+}
+
+.vm-local-video:hover {
+  transform: scale(1.05);
+}
+
+.vm-remote-videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  height: calc(100% - 5rem);
+  align-content: center;
+}
+
+.vm-remote-video-wrapper {
+  position: relative;
+  background-color: #1e1e2a;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+
+.vm-remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vm-username-badge {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  background-color: rgba(30, 30, 42, 0.7);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* Controls bar */
+.vm-controls-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(20, 20, 30, 0.9), rgba(30, 30, 42, 0.7));
+  backdrop-filter: blur(8px);
+  padding: 0.75rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 100;
+  border-top: 1px solid #3a3a4e;
+}
+
+.vm-control-button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: #2d2d42;
+  color: white;
+}
+
+.vm-control-button:hover {
+  transform: scale(1.1);
+  background-color: #3a3a4e;
+}
+
+.vm-control-button.active {
+  background-color: #4a80f0;
+}
+
+.vm-control-button.inactive {
+  background-color: #4a4a5e;
+}
+
+.vm-control-button.end-call {
+  background-color: #ff5a5f;
+}
+
+.vm-control-button.end-call:hover {
+  background-color: #e04a4f;
+}
+
+/* Chat modal */
+.vm-chat-modal {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  bottom: 5.5rem;
+  width: 320px;
+  background-color: #252538;
+  z-index: 1000;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #3a3a4e;
+  overflow: hidden;
+}
+
+.vm-chat-header {
+  padding: 1rem;
+  background-color: #2d2d42;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #3a3a4e;
+}
+
+.vm-chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background-color: #252538;
+}
+
+.vm-message {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #2d2d42;
+  border-radius: 8px;
+  word-break: break-word;
+}
+
+.vm-message-sender {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: #4a80f0;
+  font-size: 0.85rem;
+}
+
+.vm-message-content {
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.vm-chat-input-container {
+  padding: 1rem;
+  background-color: #2d2d42;
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid #3a3a4e;
+}
+
+.vm-chat-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid #3a3a4e;
+  background-color: #252538;
+  color: white;
+  outline: none;
+}
+
+.vm-chat-input:focus {
+  border-color: #4a80f0;
+}
+
+.vm-chat-send-button {
+  background-color: #4a80f0;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.vm-chat-send-button:hover {
+  background-color: #3a70e0;
+}
+
+/* Message notification badge */
+.vm-message-badge {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background-color: #ff5a5f;
+  color: white;
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .vm-remote-videos-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .vm-local-video {
+    width: 160px;
+    height: 120px;
+    bottom: 4.5rem;
+  }
+  
+  .vm-remote-videos-grid {
+    grid-template-columns: 1fr;
+    padding-top: 1rem;
+  }
+  
+  .vm-chat-modal {
+    width: 280px;
+    right: 0.5rem;
+    top: 0.5rem;
+    bottom: 4.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vm-controls-bar {
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+  
+  .vm-control-button {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .vm-local-video {
+    width: 120px;
+    height: 90px;
+    bottom: 4rem;
+    right: 0.5rem;
+  }
+  
+  .vm-chat-modal {
+    width: 100%;
+    max-width: none;
+    right: 0;
+    top: 0;
+    bottom: 4rem;
+    border-radius: 0;
+  }
+}
