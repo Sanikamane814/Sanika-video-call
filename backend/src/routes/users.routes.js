@@ -1,12 +1,14 @@
 import { Router } from "express";
-import { login,register } from "../controllers/user.controllers.js";
+import { login, register,addToActivity, getAllActivity } from "../controllers/user.controllers.js"; // ✅
+
 
 const router = Router();
 
-
 router.post("/login", login);
 router.post("/register", register);
-router.route("./add_to_activity");
-router.route("./get_all_activity");
+router.post("/add_to_activity", addToActivity);
+router.get("/get_all_activity", getAllActivity);
 
 export default router;
+
+

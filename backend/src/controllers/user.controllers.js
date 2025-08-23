@@ -1,3 +1,4 @@
+
 import httpStatus from "http-status";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
@@ -12,13 +13,13 @@ const login = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ username }); // ✅ Use findOne
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(httpStatus.NOT_FOUND).json({ message: "User not found" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password); // ✅ Await bcrypt.compare
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid password" });
@@ -62,6 +63,56 @@ const register = async (req, res) => {
   }
 };
 
-export { login, register };
+// // ADD TO ACTIVITY
+const addToActivity = async (req, res) => {
+  const { token, meeting_code } = req.body;
+
+  if (!token || !meeting_code) {
+    return res.status(400).json({ message: "Token and meeting code are required" });
+  }
+
+  try {
+    const user = await User.findOne({ token });
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({ message: "User not found" });
+    }
+
+    user.activity = user.activity || [];
+    user.activity.push({
+      meeting_code,
+      date: new Date()
+    });
+
+    await user.save();
+    return res.status(httpStatus.OK).json({ message: "Activity added successfully" });
+  } catch (e) {
+    return res.status(500).json({ message: `Something went wrong: ${e.message}` });
+  }
+};
+
+
+// GET ALL ACTIVITY - Updated to match frontend expectations
+const getAllActivity = async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Get token from header
+
+  try {
+    const user = await User.findOne({ token });
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({ message: "User not found" });
+    }
+
+    // Return data in format expected by frontend
+    return res.status(httpStatus.OK).json({
+      history: user.activity?.map(item => ({
+        meetingCode: item.meeting_code,
+        date: item.date
+      })) || []
+    });
+  } catch (e) {
+    return res.status(500).json({ message: `Something went wrong: ${e.message}` });
+  }
+};
+export { login, register, addToActivity, getAllActivity };
+
 
 
