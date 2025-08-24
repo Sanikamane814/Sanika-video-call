@@ -1,118 +1,97 @@
-
 import httpStatus from "http-status";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { Meeting } from "../models/meeting.model.js";
 
-// LOGIN
+// -------------------- LOGIN --------------------
 const login = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ message: "Please provide username and password" });
+    return res.status(400).json({ message: "Please Provide username & password" });
   }
 
   try {
     const user = await User.findOne({ username });
-
     if (!user) {
-      return res.status(httpStatus.NOT_FOUND).json({ message: "User not found" });
+      return res.status(httpStatus.NOT_FOUND).json({ message: "User Not Found" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    let isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-      return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid password" });
+    if (isPasswordCorrect) {
+      let token = crypto.randomBytes(20).toString("hex");
+      user.token = token;
+      await user.save();
+      return res.status(httpStatus.OK).json({ token });
+    } else {
+      return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid Username or Password" });
     }
-
-    const token = crypto.randomBytes(20).toString("hex");
-
-    user.token = token;
-    await user.save();
-
-    return res.status(httpStatus.OK).json({ message: "Login successful", token });
   } catch (e) {
-    return res.status(500).json({ message: `Something went wrong: ${e.message}` });
+    return res.status(500).json({ message: `Something went wrong ${e.message}` });
   }
 };
 
-// REGISTER
+// -------------------- REGISTER --------------------
 const register = async (req, res) => {
   const { name, username, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ username });
-
     if (existingUser) {
-      return res.status(httpStatus.FOUND).json({ message: "User already exists" });
+      return res.status(httpStatus.CONFLICT).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
-      name,
-      username,
-      password: hashedPassword
-    });
-
+    const newUser = new User({ name, username, password: hashedPassword });
     await newUser.save();
 
-    res.status(httpStatus.CREATED).json({ message: "User registered successfully" });
+    return res.status(httpStatus.CREATED).json({ message: "User Registered Successfully" });
   } catch (e) {
-    res.status(500).json({ message: `Something went wrong: ${e.message}` });
+    res.status(500).json({ message: `Something went wrong ${e.message}` });
   }
 };
 
-// // ADD TO ACTIVITY
+// -------------------- ADD TO ACTIVITY --------------------
 const addToActivity = async (req, res) => {
   const { token, meeting_code } = req.body;
 
-  if (!token || !meeting_code) {
-    return res.status(400).json({ message: "Token and meeting code are required" });
-  }
-
   try {
     const user = await User.findOne({ token });
     if (!user) {
-      return res.status(httpStatus.NOT_FOUND).json({ message: "User not found" });
+      return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid Token" });
     }
 
-    user.activity = user.activity || [];
-    user.activity.push({
-      meeting_code,
-      date: new Date()
+    const newMeeting = new Meeting({
+      user_id: user.username,
+      meetingCode: meeting_code,
     });
 
-    await user.save();
-    return res.status(httpStatus.OK).json({ message: "Activity added successfully" });
+    await newMeeting.save();
+    res.status(httpStatus.CREATED).json({ message: "Added meeting to history" });
   } catch (e) {
-    return res.status(500).json({ message: `Something went wrong: ${e.message}` });
+    res.status(500).json({ message: `Something went wrong ${e.message}` });
   }
 };
 
-
-// GET ALL ACTIVITY - Updated to match frontend expectations
+// -------------------- GET ALL ACTIVITY --------------------
 const getAllActivity = async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Get token from header
+  const { token } = req.query;
 
   try {
     const user = await User.findOne({ token });
     if (!user) {
-      return res.status(httpStatus.NOT_FOUND).json({ message: "User not found" });
+      return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid Token" });
     }
 
-    // Return data in format expected by frontend
-    return res.status(httpStatus.OK).json({
-      history: user.activity?.map(item => ({
-        meetingCode: item.meeting_code,
-        date: item.date
-      })) || []
-    });
+    const meetings = await Meeting.find({ user_id: user.username }).sort({ date: -1 });
+    res.status(httpStatus.OK).json(meetings);
   } catch (e) {
-    return res.status(500).json({ message: `Something went wrong: ${e.message}` });
+    res.status(500).json({ message: `Something went wrong ${e.message}` });
   }
 };
+
+// ✅ Correct exports
 export { login, register, addToActivity, getAllActivity };
-
-
-
